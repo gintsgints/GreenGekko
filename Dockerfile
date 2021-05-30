@@ -1,4 +1,4 @@
-FROM node:8
+FROM ubuntu:18.04
 
 ENV HOST localhost
 ENV PORT 3000
@@ -7,6 +7,12 @@ ENV PORT 3000
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+RUN apt-get update
+RUN apt-get install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt-get install -y build-essential nodejs
+
 # Install GYP dependencies globally, will be used to code build other dependencies
 RUN npm install -g --production node-gyp && \
     npm cache clean --force
@@ -14,7 +20,7 @@ RUN npm install -g --production node-gyp && \
 # Install Gekko dependencies
 COPY package.json .
 RUN npm install --production && \
-    npm install --production redis@0.10.0 talib@1.0.2 tulind@0.8.7 pg && \
+    npm install --production talib tulind && \
     npm cache clean --force
 
 # Install Gekko Broker dependencies
